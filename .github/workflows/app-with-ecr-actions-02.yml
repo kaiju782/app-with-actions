@@ -90,5 +90,6 @@ jobs:
             # 14-4. ECR Docker 이미지 Pull (EC2 내부에서)
             docker pull 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:${{ env.SHORT_SHA }}
       
+
           
       
