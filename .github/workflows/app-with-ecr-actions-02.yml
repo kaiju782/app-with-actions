@@ -88,7 +88,7 @@ jobs:
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com
   
             # 14-4. ECR Docker 이미지 Pull (EC2 내부에서)
-            docker pull 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:b8dc3f2
+            docker pull 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:${{ env.SHORT_SHA }}
       
           
       
