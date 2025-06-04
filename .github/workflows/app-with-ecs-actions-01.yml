@@ -3,10 +3,10 @@ on:
   workflow_dispatch
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: 
-  ECS_SERVICE: 
-  ECS_CLUSTER: 
-  CONTAINER_NAME: 
+  ECR_REPOSITORY: ecr-private
+  ECS_SERVICE: task-definition-service-6wn08xfz
+  ECS_CLUSTER: lively-fox-ip9xy1
+  CONTAINER_NAME: backend-server
   
 jobs:
   build-deploy:
@@ -56,7 +56,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
-          ECR_REGISTRY: 
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -66,10 +66,12 @@ jobs:
       - name: ECS task definition JSON file
         id: retrieve-task-def
         env:
-          ECR_REGISTRY: ?
+          ECR_REGISTRY: ecr-private
           IMAGE_TAG: latest
         run: |
-          aws ecs describe-task-definition --task-definition first-ecs-task-test-01 --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition \
+            --task-definition ? 
+            --query taskDefinition > task-definition.json
           cat task-definition.json
           echo "task-def-file=task-definition.json" >> $GITHUB_OUTPUT
 
@@ -77,14 +79,14 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ?
-          container-name: ?
-          image: ?
+          task-definition: task-definition:3
+          container-name: backend-server
+          image: 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private:latest
     
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ?
-          service: ?
-          cluster: ?
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
