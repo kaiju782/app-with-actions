@@ -70,7 +70,7 @@ jobs:
           IMAGE_TAG: latest
         run: |
           aws ecs describe-task-definition \
-            --task-definition ? 
+            --task-definition task-definition:3 
             --query taskDefinition > task-definition.json
           cat task-definition.json
           echo "task-def-file=task-definition.json" >> $GITHUB_OUTPUT
@@ -79,7 +79,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition:3
+          task-definition: task-definition.json
           container-name: backend-server
           image: 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private:latest
     
