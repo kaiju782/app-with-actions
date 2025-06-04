@@ -56,11 +56,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.AWS_ECR_PRIVATE_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_PRIVATE_REPOSITORY }}:latest .
+          docker build -t ${{ secrets.AWS_ECR_PRIVATE_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_PRIVATE_REPOSITORY }}:${{ env.SHORT_SHA }} .
 
       - name: Push Docker image to Amazon ECR
         run: |
-          docker push ${{ secrets.AWS_ECR_PRIVATE_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_PRIVATE_REPOSITORY }}:latest
+          docker push ${{ secrets.AWS_ECR_PRIVATE_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_PRIVATE_REPOSITORY }}:${{ env.SHORT_SHA }}
 
       - name: ECR test
         uses: appleboy/ssh-action@v1.0.0
@@ -95,8 +95,8 @@ jobs:
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private
   
             # 14-4. ECR Docker 이미지 Pull (EC2 내부에서)
-            docker pull 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private:latest
+            docker pull 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private:${{ env.SHORT_SHA }}
       
 
           
-      
+    
