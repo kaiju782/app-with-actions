@@ -70,7 +70,16 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             # 14-1. AWS CLI 설치 (EC2 내부에서)
-            sudo apt-get update && sudo apt-get install -y awscli
+            # AWS CLI 설치 확인
+            if ! command -v aws &> /dev/null
+            then
+              echo "AWS CLI not found, installing..."
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip -q awscliv2.zip
+              sudo ./aws/install
+            else
+              echo "AWS CLI already installed"
+            fi
 
             # 14-2. AWS Credentials 파일 생성 (Secrets 값 넣기)
             mkdir -p ~/.aws
