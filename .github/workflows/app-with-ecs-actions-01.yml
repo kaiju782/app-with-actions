@@ -23,11 +23,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
-      - name: Create application-prod.properties
+      - name: Create application.properties
         run: |
-          cd ./src/main/resources
-          touch ./application.properties
-          echo "${{ secrets.PROPERTIES }}" > ./application.properties
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
         shell: bash
         
       - name: Build with Maven
@@ -70,7 +69,7 @@ jobs:
           IMAGE_TAG: latest
         run: |
           aws ecs describe-task-definition \
-            --task-definition task-definition:3 
+            --task-definition task-definition:3 \
             --query taskDefinition > task-definition.json
           cat task-definition.json
           echo "task-def-file=task-definition.json" >> $GITHUB_OUTPUT
@@ -81,7 +80,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: backend-server
-          image: 904570587382.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-private:latest
+          image: ${{ steps.build-image.outputs.image }}
     
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
